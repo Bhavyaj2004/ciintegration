@@ -1,0 +1,39 @@
+# .github/workflows/ci-pipeline.yml
+
+# 1. Give your workflow a name
+name: Node.js CI Pipeline
+
+# 2. Define the event that triggers the workflow
+on:
+  push:
+    branches: [ "main" ] # Run on pushes to the main branch
+  pull_request:
+    branches: [ "main" ] # Also run on pull requests to main
+
+# 3. Define the jobs to run
+jobs:
+  # Define a job named 'build-and-test'
+  build-and-test:
+    # 4. Specify the runner environment
+    runs-on: ubuntu-latest
+
+    # 5. Define the steps within the job
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify the Node.js version
+
+      # Step 3: Install dependencies
+      # Using 'npm ci' is faster and more reliable for CI environments
+      - name: Install Dependencies
+        run: npm ci
+
+      # Step 4: Run the tests
+      - name: Run Tests
+        run: npm test
