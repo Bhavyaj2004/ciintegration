@@ -45,8 +45,29 @@ pipeline {
     // 3. Post-Build Actions (Optional)
     // Define actions that run at the end of the pipeline, regardless of outcome.
     post {
+        // This block runs after all stages are complete
         always {
-            echo 'Pipeline finished.'
+            // This runs regardless of the build's outcome
+            slackSend channel: '#build-notifications', 
+                      message: "Build finished for `${env.JOB_NAME}` #${env.BUILD_NUMBER}. Status: ${currentBuild.currentResult}. Details: ${env.BUILD_URL}"
+        }
+        success {
+            // This only runs if the build is successful
+            slackSend channel: '#build-notifications', 
+                      color: 'good', // 'good' is green
+                      message: "SUCCESS: `${env.JOB_NAME}` build #${env.BUILD_NUMBER} completed successfully. Details: ${env.BUILD_URL}"
+        }
+        failure {
+            // This only runs if the build fails
+            slackSend channel: '#build-notifications', 
+                      color: 'danger', // 'danger' is red
+                      message: "FAILURE: `${env.JOB_NAME}` build #${env.BUILD_NUMBER} failed. Please check the logs: ${env.BUILD_URL}"
+        }
+        unstable {
+            // This only runs if the build is unstable (e.g., tests failed but build didn't)
+             slackSend channel: '#build-notifications', 
+                      color: 'warning', // 'warning' is yellow
+                      message: "UNSTABLE: `${env.JOB_NAME}` build #${env.BUILD_NUMBER} is unstable. Details: ${env.BUILD_URL}"
         }
     }
 }
